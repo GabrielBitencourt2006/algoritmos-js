@@ -23,38 +23,56 @@ btn.addEventListener('click', () => {
         let resultado = "";
         const parseArray = (str) => str.split(',').map(num => Number(num.trim()));
         const parseNum = (str) => Number(str);
+        const validarInteiros = (valores) => {
+            if (valores.some(v => !Number.isInteger(v))) {
+                throw new Error("Digite apenas numeros inteiros!");
+            }
+        };
 
         switch (escolha) {
             case 'primo':
                 const numPrimo = parseNum(valorDigitado);
+                validarInteiros([numPrimo]);
                 const ehPrimo = Primo.verificar(numPrimo);
                 resultado = `${numPrimo} e primo? ${ehPrimo ? 'Sim' : 'Nao'}`;
                 break;
             case 'somatorio':
                 const arrSoma = parseArray(valorDigitado);
+                if (arrSoma.some(v => Number.isNaN(v))) {
+                    throw new Error("Digite apenas numeros separados por virgula!");
+                }
                 resultado = `Soma: ${Somatorio.calcular(arrSoma)}`;
                 break;
             case 'fibonacci':
                 const numFibo = parseNum(valorDigitado);
+                validarInteiros([numFibo]);
                 resultado = `Termos: ${Fibonacci.gerar(numFibo).join(', ')}`;
                 break;
             case 'mdc':
                 const arrMdc = parseArray(valorDigitado);
+                if (arrMdc.length !== 2) {
+                    throw new Error("Digite dois numeros separados por virgula (ex: 48,18)!");
+                }
+                validarInteiros(arrMdc);
                 resultado = `MDC: ${Mdc.calcular(arrMdc[0], arrMdc[1])}`;
                 break;
             case 'quicksort':
                 const arrQuick = parseArray(valorDigitado);
-                Quicksort.ordenar(arrQuick);
-                resultado = `Ordenado: [${arrQuick.join(', ')}]`;
+                if (arrQuick.some(v => Number.isNaN(v))) {
+                    throw new Error("Digite apenas numeros separados por virgula!");
+                }
+                const ordenado = Quicksort.ordenar(arrQuick);
+                resultado = `Ordenado: [${ordenado.join(', ')}]`;
                 break;
             case 'contagem':
                 const nContagem = parseNum(valorDigitado);
+                validarInteiros([nContagem]);
                 const dadosBase = [5, 8, 12, 18, 20];
                 resultado = `Quantidade entre ${dadosBase[0]} e ${nContagem}: ${Contagem.contar(dadosBase, nContagem)}`;
                 break;
         }
         resultadoDiv.innerText = resultado;
     } catch (error) {
-        resultadoDiv.innerText = "Erro ao processar os dados.";
+        resultadoDiv.innerText = error.message || "Erro ao processar os dados.";
     }
 });
